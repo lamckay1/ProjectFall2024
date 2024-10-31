@@ -4,13 +4,63 @@
 
 module top #(parameter MSG_SIZE = 24,
 	     parameter PADDED_SIZE = 512)
-   (input logic [MSG_SIZE-1:0] message,
+   (input logic [MSG_SIZE-1:0] message, input clk,input reset,
     output logic [255:0] hashed);
 
    logic [PADDED_SIZE-1:0] padded;
    
    sha_padder #(.MSG_SIZE(MSG_SIZE), .PADDED_SIZE(PADDED_SIZE)) padder (.message(message), .padded(padded));
    sha256 #(.PADDED_SIZE(PADDED_SIZE)) main (.padded(padded), .hashed(hashed));
+
+      typedef enum 	logic [1:0] {S0, S1,S2} statetype;
+   statetype state, nextstate;
+
+      always_ff @(posedge clk, posedge reset)
+     if (reset) state <= S0;
+     else       state <= nextstate;
+
+   
+
+      always_comb
+     case (state)
+       S0: begin
+         counter64 count1(
+      input  logic clk,        // Clock input
+      input  logic rst,        // Reset input (active high
+      output logic [5:0] count // 6-bit counter output (counts from 0 to 63)
+      );
+      main_comp mc01 (a, b, c, d, 
+		   e, f, g, h, 
+		   K[], W0,
+		   a0_out, b0_out, c0_out, d0_out, 
+		   e0_out, f0_out, g0_out, h0_out);
+       if(count == 63) nextstate<=S2;
+       else nextstate<=S1;
+      end
+
+   S1: begin
+      counter64 count1(
+      input  logic clk,        // Clock input
+      input  logic rst,        // Reset input (active high
+      output logic [5:0] count // 6-bit counter output (counts from 0 to 63)
+      );
+      main_comp mc01 (a0_out, b0_out, c0_out, d0_out, 
+		   e0_out, f0_out, g0_out, h0_out, 
+		   K[], W0,
+		   a, b, c, , 
+		   e, f, g, h);
+      if(count == 63) nextstate<=S2;
+      else nextstate <=S0;
+   end
+   S2: begin
+
+
+
+
+   end
+     endcase
+
+   
    
 endmodule // sha_256
 
@@ -154,332 +204,8 @@ module sha256 #(parameter PADDED_SIZE = 512)
    assign f = H[95:64];
    assign g = H[63:32];
    assign h = H[31:0];
-   main_comp mc01 (a, b, c, d, 
-		   e, f, g, h, 
-		   K[2047:2016], W0,
-		   a0_out, b0_out, c0_out, d0_out, 
-		   e0_out, f0_out, g0_out, h0_out);
-   main_comp mc02 (a0_out, b0_out, c0_out, d0_out, 
-		   e0_out, f0_out, g0_out, h0_out, 
-		   K[2015:1984], W1,
-		   a1_out, b1_out, c1_out, d1_out, 
-		   e1_out, f1_out, g1_out, h1_out);
-   main_comp mc03 (a1_out, b1_out, c1_out, d1_out, 
-		   e1_out, f1_out, g1_out, h1_out, 
-		   K[1983:1952], W2,
-		   a2_out, b2_out, c2_out, d2_out, 
-		   e2_out, f2_out, g2_out, h2_out);
-   main_comp mc04 (a2_out, b2_out, c2_out, d2_out, 
-		   e2_out, f2_out, g2_out, h2_out, 
-		   K[1951:1920], W3,
-		   a3_out, b3_out, c3_out, d3_out, 
-		   e3_out, f3_out, g3_out, h3_out);
-   main_comp mc05 (a3_out, b3_out, c3_out, d3_out, 
-		   e3_out, f3_out, g3_out, h3_out, 
-		   K[1919:1888], W4,
-		   a4_out, b4_out, c4_out, d4_out, 
-		   e4_out, f4_out, g4_out, h4_out);
-   main_comp mc06 (a4_out, b4_out, c4_out, d4_out, 
-		   e4_out, f4_out, g4_out, h4_out, 
-		   K[1887:1856], W5,
-		   a5_out, b5_out, c5_out, d5_out, 
-		   e5_out, f5_out, g5_out, h5_out);
-   main_comp mc07 (a5_out, b5_out, c5_out, d5_out, 
-		   e5_out, f5_out, g5_out, h5_out, 
-		   K[1855:1824], W6,
-		   a6_out, b6_out, c6_out, d6_out, 
-		   e6_out, f6_out, g6_out, h6_out);
-   main_comp mc08 (a6_out, b6_out, c6_out, d6_out, 
-		   e6_out, f6_out, g6_out, h6_out, 
-		   K[1823:1792], W7,
-		   a7_out, b7_out, c7_out, d7_out, 
-		   e7_out, f7_out, g7_out, h7_out);   
-   main_comp mc09 (a7_out, b7_out, c7_out, d7_out, 
-		   e7_out, f7_out, g7_out, h7_out, 
-		   K[1791:1760], W8,
-		   a8_out, b8_out, c8_out, d8_out, 
-		   e8_out, f8_out, g8_out, h8_out);   
-   main_comp mc10 (a8_out, b8_out, c8_out, d8_out, 
-		   e8_out, f8_out, g8_out, h8_out, 
-		   K[1759:1728], W9,
-		   a9_out, b9_out, c9_out, d9_out, 
-		   e9_out, f9_out, g9_out, h9_out);
 
-   main_comp mc11 (a9_out, b9_out, c9_out, d9_out, 
-		   e9_out, f9_out, g9_out, h9_out, 
-		   K[1727:1696], W10,
-		   a10_out, b10_out, c10_out, d10_out, 
-		   e10_out, f10_out, g10_out, h10_out);
-   main_comp mc12 (a10_out, b10_out, c10_out, d10_out, 
-		   e10_out, f10_out, g10_out, h10_out, 
-		   K[1695:1664], W11,
-		   a11_out, b11_out, c11_out, d11_out, 
-		   e11_out, f11_out, g11_out, h11_out);
-   main_comp mc13 (a11_out, b11_out, c11_out, d11_out, 
-		   e11_out, f11_out, g11_out, h11_out, 
-		   K[1663:1632], W12,
-		   a12_out, b12_out, c12_out, d12_out, 
-		   e12_out, f12_out, g12_out, h12_out);
-   main_comp mc14 (a12_out, b12_out, c12_out, d12_out, 
-		   e12_out, f12_out, g12_out, h12_out, 
-		   K[1631:1600], W13,
-		   a13_out, b13_out, c13_out, d13_out, 
-		   e13_out, f13_out, g13_out, h13_out);
-   main_comp mc15 (a13_out, b13_out, c13_out, d13_out, 
-		   e13_out, f13_out, g13_out, h13_out, 
-		   K[1599:1568], W14,
-		   a14_out, b14_out, c14_out, d14_out, 
-		   e14_out, f14_out, g14_out, h14_out);
-   main_comp mc16 (a14_out, b14_out, c14_out, d14_out, 
-		   e14_out, f14_out, g14_out, h14_out, 
-		   K[1567:1536], W15,
-		   a15_out, b15_out, c15_out, d15_out, 
-		   e15_out, f15_out, g15_out, h15_out);   
-   main_comp mc17 (a15_out, b15_out, c15_out, d15_out, 
-		   e15_out, f15_out, g15_out, h15_out, 
-		   K[1535:1504], W16,
-		   a16_out, b16_out, c16_out, d16_out, 
-		   e16_out, f16_out, g16_out, h16_out);
-   main_comp mc18 (a16_out, b16_out, c16_out, d16_out, 
-		   e16_out, f16_out, g16_out, h16_out, 
-		   K[1503:1472], W17,
-		   a17_out, b17_out, c17_out, d17_out, 
-		   e17_out, f17_out, g17_out, h17_out);
-   main_comp mc19 (a17_out, b17_out, c17_out, d17_out, 
-		   e17_out, f17_out, g17_out, h17_out, 
-		   K[1471:1440], W18,
-		   a18_out, b18_out, c18_out, d18_out, 
-		   e18_out, f18_out, g18_out, h18_out);   
-   main_comp mc20 (a18_out, b18_out, c18_out, d18_out, 
-		   e18_out, f18_out, g18_out, h18_out, 
-		   K[1439:1408], W19,
-		   a19_out, b19_out, c19_out, d19_out, 
-		   e19_out, f19_out, g19_out, h19_out);
-   
-   main_comp mc21 (a19_out, b19_out, c19_out, d19_out, 
-		   e19_out, f19_out, g19_out, h19_out, 
-		   K[1407:1376], W20,
-		   a20_out, b20_out, c20_out, d20_out, 
-		   e20_out, f20_out, g20_out, h20_out);
-   main_comp mc22 (a20_out, b20_out, c20_out, d20_out, 
-		   e20_out, f20_out, g20_out, h20_out, 
-		   K[1375:1344], W21,
-		   a21_out, b21_out, c21_out, d21_out, 
-		   e21_out, f21_out, g21_out, h21_out);
-   main_comp mc23 (a21_out, b21_out, c21_out, d21_out, 
-		   e21_out, f21_out, g21_out, h21_out, 
-		   K[1343:1312], W22,
-		   a22_out, b22_out, c22_out, d22_out, 
-		   e22_out, f22_out, g22_out, h22_out);
-   main_comp mc24 (a22_out, b22_out, c22_out, d22_out, 
-		   e22_out, f22_out, g22_out, h22_out, 
-		   K[1311:1280], W23,
-		   a23_out, b23_out, c23_out, d23_out, 
-		   e23_out, f23_out, g23_out, h23_out);   
-   main_comp mc25 (a23_out, b23_out, c23_out, d23_out, 
-		   e23_out, f23_out, g23_out, h23_out, 
-		   K[1279:1248], W24,
-		   a24_out, b24_out, c24_out, d24_out, 
-		   e24_out, f24_out, g24_out, h24_out);
-   main_comp mc26 (a24_out, b24_out, c24_out, d24_out, 
-		   e24_out, f24_out, g24_out, h24_out, 
-		   K[1247:1216], W25,
-		   a25_out, b25_out, c25_out, d25_out, 
-		   e25_out, f25_out, g25_out, h25_out);
-   main_comp mc27 (a25_out, b25_out, c25_out, d25_out, 
-		   e25_out, f25_out, g25_out, h25_out, 
-		   K[1215:1184], W26,
-		   a26_out, b26_out, c26_out, d26_out, 
-		   e26_out, f26_out, g26_out, h26_out);
-   main_comp mc28 (a26_out, b26_out, c26_out, d26_out, 
-		   e26_out, f26_out, g26_out, h26_out, 
-		   K[1183:1152], W27,
-		   a27_out, b27_out, c27_out, d27_out, 
-		   e27_out, f27_out, g27_out, h27_out);
-   main_comp mc29 (a27_out, b27_out, c27_out, d27_out, 
-		   e27_out, f27_out, g27_out, h27_out, 
-		   K[1151:1120], W28,
-		   a28_out, b28_out, c28_out, d28_out, 
-		   e28_out, f28_out, g28_out, h28_out);
-   main_comp mc30 (a28_out, b28_out, c28_out, d28_out, 
-		   e28_out, f28_out, g28_out, h28_out, 
-		   K[1119:1088], W29,
-		   a29_out, b29_out, c29_out, d29_out, 
-		   e29_out, f29_out, g29_out, h29_out);   
-   
-   main_comp mc31 (a29_out, b29_out, c29_out, d29_out, 
-		   e29_out, f29_out, g29_out, h29_out, 
-		   K[1087:1056], W30,
-		   a30_out, b30_out, c30_out, d30_out, 
-		   e30_out, f30_out, g30_out, h30_out);
-   main_comp mc32 (a30_out, b30_out, c30_out, d30_out, 
-		   e30_out, f30_out, g30_out, h30_out, 
-		   K[1055:1024], W31,
-		   a31_out, b31_out, c31_out, d31_out, 
-		   e31_out, f31_out, g31_out, h31_out);
-   main_comp mc33 (a31_out, b31_out, c31_out, d31_out, 
-		   e31_out, f31_out, g31_out, h31_out, 
-		   K[1023:992], W32,
-		   a32_out, b32_out, c32_out, d32_out, 
-		   e32_out, f32_out, g32_out, h32_out);
-   main_comp mc34 (a32_out, b32_out, c32_out, d32_out, 
-		   e32_out, f32_out, g32_out, h32_out, 
-		   K[991:960], W33,
-		   a33_out, b33_out, c33_out, d33_out, 
-		   e33_out, f33_out, g33_out, h33_out);
-   main_comp mc35 (a33_out, b33_out, c33_out, d33_out, 
-		   e33_out, f33_out, g33_out, h33_out, 
-		   K[959:928], W34,
-		   a34_out, b34_out, c34_out, d34_out, 
-		   e34_out, f34_out, g34_out, h34_out);   
-   main_comp mc36 (a34_out, b34_out, c34_out, d34_out, 
-		   e34_out, f34_out, g34_out, h34_out, 
-		   K[927:896], W35,
-		   a35_out, b35_out, c35_out, d35_out, 
-		   e35_out, f35_out, g35_out, h35_out);
-   main_comp mc37 (a35_out, b35_out, c35_out, d35_out, 
-		   e35_out, f35_out, g35_out, h35_out, 
-		   K[895:864], W36,
-		   a36_out, b36_out, c36_out, d36_out, 
-		   e36_out, f36_out, g36_out, h36_out);
-   main_comp mc38 (a36_out, b36_out, c36_out, d36_out, 
-		   e36_out, f36_out, g36_out, h36_out, 
-		   K[863:832], W37,
-		   a37_out, b37_out, c37_out, d37_out, 
-		   e37_out, f37_out, g37_out, h37_out);
-   main_comp mc39 (a37_out, b37_out, c37_out, d37_out, 
-		   e37_out, f37_out, g37_out, h37_out, 
-		   K[831:800], W38,
-		   a38_out, b38_out, c38_out, d38_out, 
-		   e38_out, f38_out, g38_out, h38_out);
-   main_comp mc40 (a38_out, b38_out, c38_out, d38_out, 
-		   e38_out, f38_out, g38_out, h38_out, 
-		   K[799:768], W39,
-		   a39_out, b39_out, c39_out, d39_out, 
-		   e39_out, f39_out, g39_out, h39_out);              
 
-   main_comp mc41 (a39_out, b39_out, c39_out, d39_out, 
-		   e39_out, f39_out, g39_out, h39_out, 
-		   K[767:736], W40,
-		   a40_out, b40_out, c40_out, d40_out, 
-		   e40_out, f40_out, g40_out, h40_out);
-   main_comp mc42 (a40_out, b40_out, c40_out, d40_out, 
-		   e40_out, f40_out, g40_out, h40_out, 
-		   K[735:704], W41,
-		   a41_out, b41_out, c41_out, d41_out, 
-		   e41_out, f41_out, g41_out, h41_out);
-   main_comp mc43 (a41_out, b41_out, c41_out, d41_out, 
-		   e41_out, f41_out, g41_out, h41_out, 
-		   K[703:672], W42,
-		   a42_out, b42_out, c42_out, d42_out, 
-		   e42_out, f42_out, g42_out, h42_out);
-   main_comp mc44 (a42_out, b42_out, c42_out, d42_out, 
-		   e42_out, f42_out, g42_out, h42_out, 
-		   K[671:640], W43,
-		   a43_out, b43_out, c43_out, d43_out, 
-		   e43_out, f43_out, g43_out, h43_out);
-   main_comp mc45 (a43_out, b43_out, c43_out, d43_out, 
-		   e43_out, f43_out, g43_out, h43_out, 
-		   K[639:608], W44,
-		   a44_out, b44_out, c44_out, d44_out, 
-		   e44_out, f44_out, g44_out, h44_out);   
-   main_comp mc46 (a44_out, b44_out, c44_out, d44_out, 
-		   e44_out, f44_out, g44_out, h44_out, 
-		   K[607:576], W45,
-		   a45_out, b45_out, c45_out, d45_out, 
-		   e45_out, f45_out, g45_out, h45_out);
-   main_comp mc47 (a45_out, b45_out, c45_out, d45_out, 
-		   e45_out, f45_out, g45_out, h45_out, 
-		   K[575:544], W46,
-		   a46_out, b46_out, c46_out, d46_out, 
-		   e46_out, f46_out, g46_out, h46_out);
-   main_comp mc48 (a46_out, b46_out, c46_out, d46_out, 
-		   e46_out, f46_out, g46_out, h46_out, 
-		   K[543:512], W47,
-		   a47_out, b47_out, c47_out, d47_out, 
-		   e47_out, f47_out, g47_out, h47_out);
-   main_comp mc49 (a47_out, b47_out, c47_out, d47_out, 
-		   e47_out, f47_out, g47_out, h47_out, 
-		   K[511:480], W48,
-		   a48_out, b48_out, c48_out, d48_out, 
-		   e48_out, f48_out, g48_out, h48_out);
-   main_comp mc50 (a48_out, b48_out, c48_out, d48_out, 
-		   e48_out, f48_out, g48_out, h48_out, 
-		   K[479:448], W49,
-		   a49_out, b49_out, c49_out, d49_out, 
-		   e49_out, f49_out, g49_out, h49_out);
-
-   main_comp mc51 (a49_out, b49_out, c49_out, d49_out, 
-		   e49_out, f49_out, g49_out, h49_out, 
-		   K[447:416], W50,
-		   a50_out, b50_out, c50_out, d50_out, 
-		   e50_out, f50_out, g50_out, h50_out);
-   main_comp mc52 (a50_out, b50_out, c50_out, d50_out, 
-		   e50_out, f50_out, g50_out, h50_out, 
-		   K[415:384], W51,
-		   a51_out, b51_out, c51_out, d51_out, 
-		   e51_out, f51_out, g51_out, h51_out);
-   main_comp mc53 (a51_out, b51_out, c51_out, d51_out, 
-		   e51_out, f51_out, g51_out, h51_out, 
-		   K[383:352], W52,
-		   a52_out, b52_out, c52_out, d52_out, 
-		   e52_out, f52_out, g52_out, h52_out);
-   main_comp mc54 (a52_out, b52_out, c52_out, d52_out, 
-		   e52_out, f52_out, g52_out, h52_out, 
-		   K[351:320], W53,
-		   a53_out, b53_out, c53_out, d53_out, 
-		   e53_out, f53_out, g53_out, h53_out);
-   main_comp mc55 (a53_out, b53_out, c53_out, d53_out, 
-		   e53_out, f53_out, g53_out, h53_out, 
-		   K[319:288], W54,
-		   a54_out, b54_out, c54_out, d54_out, 
-		   e54_out, f54_out, g54_out, h54_out);   
-   main_comp mc56 (a54_out, b54_out, c54_out, d54_out, 
-		   e54_out, f54_out, g54_out, h54_out, 
-		   K[287:256], W55,
-		   a55_out, b55_out, c55_out, d55_out, 
-		   e55_out, f55_out, g55_out, h55_out);
-   main_comp mc57 (a55_out, b55_out, c55_out, d55_out, 
-		   e55_out, f55_out, g55_out, h55_out, 
-		   K[255:224], W56,
-		   a56_out, b56_out, c56_out, d56_out, 
-		   e56_out, f56_out, g56_out, h56_out);
-   main_comp mc58 (a56_out, b56_out, c56_out, d56_out, 
-		   e56_out, f56_out, g56_out, h56_out, 
-		   K[223:192], W57,
-		   a57_out, b57_out, c57_out, d57_out, 
-		   e57_out, f57_out, g57_out, h57_out);
-   main_comp mc59 (a57_out, b57_out, c57_out, d57_out, 
-		   e57_out, f57_out, g57_out, h57_out, 
-		   K[191:160], W58,
-		   a58_out, b58_out, c58_out, d58_out, 
-		   e58_out, f58_out, g58_out, h58_out);
-   main_comp mc60 (a58_out, b58_out, c58_out, d58_out, 
-		   e58_out, f58_out, g58_out, h58_out, 
-		   K[159:128], W59,
-		   a59_out, b59_out, c59_out, d59_out, 
-		   e59_out, f59_out, g59_out, h59_out);
-
-   main_comp mc61 (a59_out, b59_out, c59_out, d59_out, 
-		   e59_out, f59_out, g59_out, h59_out, 
-		   K[127:96], W60,
-		   a60_out, b60_out, c60_out, d60_out, 
-		   e60_out, f60_out, g60_out, h60_out);
-   main_comp mc62 (a60_out, b60_out, c60_out, d60_out, 
-		   e60_out, f60_out, g60_out, h60_out, 
-		   K[95:64], W61,
-		   a61_out, b61_out, c61_out, d61_out, 
-		   e61_out, f61_out, g61_out, h61_out);
-   main_comp mc63 (a61_out, b61_out, c61_out, d61_out, 
-		   e61_out, f61_out, g61_out, h61_out, 
-		   K[63:32], W62,
-		   a62_out, b62_out, c62_out, d62_out, 
-		   e62_out, f62_out, g62_out, h62_out);
-   main_comp mc64 (a62_out, b62_out, c62_out, d62_out, 
-		   e62_out, f62_out, g62_out, h62_out, 
-		   K[31:0], W63,
-		   a63_out, b63_out, c63_out, d63_out, 
-		   e63_out, f63_out, g63_out, h63_out);
                                  
    intermediate_hash ih1 (a63_out, b63_out, c63_out, d63_out,
 			  e63_out, f63_out, g63_out, h63_out,
