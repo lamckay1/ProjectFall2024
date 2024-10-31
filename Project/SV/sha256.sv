@@ -8,9 +8,33 @@ module top #(parameter MSG_SIZE = 24,
     output logic [255:0] hashed);
 
    logic [PADDED_SIZE-1:0] padded;
+   logic [31:0] a,b,c,d,e,f,g,h;
+   logic [31:0]   a0_out, b0_out, c0_out, d0_out, e0_out, f0_out, g0_out, h0_out;
+    logic [31:0] W0, W1, W2, W3, W4;
+	 logic [31:0] W5, W6, W7, W8, W9;
+	logic [31:0] W10, W11, W12, W13, W14; 
+	 logic [31:0] W15, W16, W17, W18, W19;
+	 logic [31:0] W20, W21, W22, W23, W24; 
+	 logic [31:0] W25, W26, W27, W28, W29;
+	logic [31:0] W30, W31, W32, W33, W34;
+	 logic [31:0] W35, W36, W37, W38, W39;
+	 logic [31:0] W40, W41, W42, W43, W44; 
+	 logic [31:0] W45, W46, W47, W48, W49;
+	 logic [31:0] W50, W51, W52, W53, W54; 
+	 logic [31:0] W55, W56, W57, W58, W59;
+	 logic [31:0] W60, W61, W62, W63;
+    logic [31:0] h1, h2, h3, h4, h5, h6, h7;
+    logic [31:0] Kin, Win;
+    logic [5:0] count;
+
+   
+   logic [255:0] H = {32'h6a09e667, 32'hbb67ae85,
+		      32'h3c6ef372, 32'ha54ff53a, 32'h510e527f, 32'h9b05688c,
+		      32'h1f83d9ab, 32'h5be0cd19};
    
    sha_padder #(.MSG_SIZE(MSG_SIZE), .PADDED_SIZE(PADDED_SIZE)) padder (.message(message), .padded(padded));
-   sha256 #(.PADDED_SIZE(PADDED_SIZE)) main (.padded(padded), .hashed(hashed));
+   
+
 
       typedef enum 	logic [1:0] {S0, S1,S2} statetype;
    statetype state, nextstate;
@@ -19,19 +43,85 @@ module top #(parameter MSG_SIZE = 24,
      if (reset) state <= S0;
      else       state <= nextstate;
 
-   
 
-      always_comb
+
+   prepare p(padded[511:480], padded[479:448], padded[447:416],
+	       padded[415:384], padded[383:352], padded[351:320],
+	       padded[319:288], padded[287:256], padded[255:224],
+	       padded[223:192], padded[191:160], padded[159:128],
+	       padded[127:96], padded[95:64], padded[63:32],
+	       padded[31:0],
+		 W0, W1, W2, W3, W4, 
+		 W5, W6, W7, W8, W9,
+		 W10, W11, W12, W13, W14, 
+		 W15, W16, W17, W18, W19,
+		 W20, W21, W22, W23, W24, 
+		 W25, W26, W27, W28, W29,
+		 W30, W31, W32, W33, W34, 
+		W35, W36, W37, W38, W39,
+		W40, W41, W42, W43, W44, 
+		 W45, W46, W47, W48, W49,
+		W50, W51, W52, W53, W54, 
+		W55, W56, W57, W58, W59,
+		W60, W61, W62, W63);
+
+     always_comb
      case (state)
-       S0: begin
+
+      S0: begin
+         if(count==0)begin 
+            a <= H[255:224];
+            b <= H[223:192];
+            c <= H[191:160];
+            d <= H[159:128];
+            e <= H[127:96];
+            f <= H[95:64];
+            g <= H[63:32];
+            h <= H[31:0];
+         end
+
          counter64 count1(
       input  logic clk,        // Clock input
       input  logic rst,        // Reset input (active high
       output logic [5:0] count // 6-bit counter output (counts from 0 to 63)
       );
+      
+     
+      mux_K mu1(32'h428a2f98, 32'h71374491, 32'hb5c0fbcf,
+		       32'he9b5dba5, 32'h3956c25b, 32'h59f111f1, 32'h923f82a4,
+		       32'hab1c5ed5, 32'hd807aa98, 32'h12835b01, 32'h243185be,
+		       32'h550c7dc3, 32'h72be5d74, 32'h80deb1fe, 32'h9bdc06a7,
+		       32'hc19bf174, 32'he49b69c1, 32'hefbe4786, 32'h0fc19dc6,
+		       32'h240ca1cc, 32'h2de92c6f, 32'h4a7484aa, 32'h5cb0a9dc,
+		       32'h76f988da, 32'h983e5152, 32'ha831c66d, 32'hb00327c8,
+		       32'hbf597fc7, 32'hc6e00bf3, 32'hd5a79147, 32'h06ca6351,
+		       32'h14292967, 32'h27b70a85, 32'h2e1b2138, 32'h4d2c6dfc,
+		       32'h53380d13, 32'h650a7354, 32'h766a0abb, 32'h81c2c92e,
+		       32'h92722c85, 32'ha2bfe8a1, 32'ha81a664b, 32'hc24b8b70,
+		       32'hc76c51a3, 32'hd192e819, 32'hd6990624, 32'hf40e3585,
+		       32'h106aa070, 32'h19a4c116, 32'h1e376c08, 32'h2748774c,
+		       32'h34b0bcb5, 32'h391c0cb3, 32'h4ed8aa4a, 32'h5b9cca4f,
+		       32'h682e6ff3, 32'h748f82ee, 32'h78a5636f, 32'h84c87814,
+		       32'h8cc70208, 32'h90befffa, 32'ha4506ceb, 32'hbef9a3f7,
+		       32'hc67178f2, count, Kin);
+
+      mux_W mu2(output logic [31:0] W0, W1, W2, W3, W4, 
+		output logic [31:0] W5, W6, W7, W8, W9,
+		output logic [31:0] W10, W11, W12, W13, W14, 
+		output logic [31:0] W15, W16, W17, W18, W19,
+		output logic [31:0] W20, W21, W22, W23, W24, 
+		output logic [31:0] W25, W26, W27, W28, W29,
+		output logic [31:0] W30, W31, W32, W33, W34, 
+		output logic [31:0] W35, W36, W37, W38, W39,
+		output logic [31:0] W40, W41, W42, W43, W44, 
+		output logic [31:0] W45, W46, W47, W48, W49,
+		output logic [31:0] W50, W51, W52, W53, W54, 
+		output logic [31:0] W55, W56, W57, W58, W59,
+		output logic [31:0] W60, W61, W62, W63, count, Win)
+
       main_comp mc01 (a, b, c, d, 
 		   e, f, g, h, 
-		   K[], W0,
+		   Kin, Win,
 		   a0_out, b0_out, c0_out, d0_out, 
 		   e0_out, f0_out, g0_out, h0_out);
        if(count == 63) nextstate<=S2;
@@ -39,24 +129,65 @@ module top #(parameter MSG_SIZE = 24,
       end
 
    S1: begin
+
+
       counter64 count1(
       input  logic clk,        // Clock input
       input  logic rst,        // Reset input (active high
       output logic [5:0] count // 6-bit counter output (counts from 0 to 63)
       );
-      main_comp mc01 (a0_out, b0_out, c0_out, d0_out, 
+      mux_K mu3(32'h428a2f98, 32'h71374491, 32'hb5c0fbcf,
+		       32'he9b5dba5, 32'h3956c25b, 32'h59f111f1, 32'h923f82a4,
+		       32'hab1c5ed5, 32'hd807aa98, 32'h12835b01, 32'h243185be,
+		       32'h550c7dc3, 32'h72be5d74, 32'h80deb1fe, 32'h9bdc06a7,
+		       32'hc19bf174, 32'he49b69c1, 32'hefbe4786, 32'h0fc19dc6,
+		       32'h240ca1cc, 32'h2de92c6f, 32'h4a7484aa, 32'h5cb0a9dc,
+		       32'h76f988da, 32'h983e5152, 32'ha831c66d, 32'hb00327c8,
+		       32'hbf597fc7, 32'hc6e00bf3, 32'hd5a79147, 32'h06ca6351,
+		       32'h14292967, 32'h27b70a85, 32'h2e1b2138, 32'h4d2c6dfc,
+		       32'h53380d13, 32'h650a7354, 32'h766a0abb, 32'h81c2c92e,
+		       32'h92722c85, 32'ha2bfe8a1, 32'ha81a664b, 32'hc24b8b70,
+		       32'hc76c51a3, 32'hd192e819, 32'hd6990624, 32'hf40e3585,
+		       32'h106aa070, 32'h19a4c116, 32'h1e376c08, 32'h2748774c,
+		       32'h34b0bcb5, 32'h391c0cb3, 32'h4ed8aa4a, 32'h5b9cca4f,
+		       32'h682e6ff3, 32'h748f82ee, 32'h78a5636f, 32'h84c87814,
+		       32'h8cc70208, 32'h90befffa, 32'ha4506ceb, 32'hbef9a3f7,
+		       32'hc67178f2, count, Kin);
+            
+      mux_W mu4(output logic [31:0] W0, W1, W2, W3, W4, 
+		output logic [31:0] W5, W6, W7, W8, W9,
+		output logic [31:0] W10, W11, W12, W13, W14, 
+		output logic [31:0] W15, W16, W17, W18, W19,
+		output logic [31:0] W20, W21, W22, W23, W24, 
+		output logic [31:0] W25, W26, W27, W28, W29,
+		output logic [31:0] W30, W31, W32, W33, W34, 
+		output logic [31:0] W35, W36, W37, W38, W39,
+		output logic [31:0] W40, W41, W42, W43, W44, 
+		output logic [31:0] W45, W46, W47, W48, W49,
+		output logic [31:0] W50, W51, W52, W53, W54, 
+		output logic [31:0] W55, W56, W57, W58, W59,
+		output logic [31:0] W60, W61, W62, W63, count, Win)
+
+      main_comp mc02 (a0_out, b0_out, c0_out, d0_out, 
 		   e0_out, f0_out, g0_out, h0_out, 
-		   K[], W0,
-		   a, b, c, , 
+		   Kin, Win,
+		   a, b, c, d, 
 		   e, f, g, h);
       if(count == 63) nextstate<=S2;
       else nextstate <=S0;
    end
    S2: begin
+      
+   intermediate_hash ih2(a0_out, b0_out, c0_out, d0_out,
+			  e0_out, f0_out, g0_out, h0_out,
+			  a, b, c, d, e, f, g, h,
+			  h0, h1, h2, h3, h4, h5, h6, h7);
 
+   assign hashed = {h0, h1, h2, h3, h4, h5, h6, h7};
 
-
-
+      
+      
+      break;
    end
      endcase
 
@@ -76,146 +207,7 @@ module sha_padder #(parameter MSG_SIZE = 24,
 
 endmodule // sha_padder
 
-module sha256 #(parameter PADDED_SIZE = 512)
-   (input logic [PADDED_SIZE-1:0] padded,
-    output logic [255:0] hashed);   
 
-   logic [255:0] H = {32'h6a09e667, 32'hbb67ae85,
-		      32'h3c6ef372, 32'ha54ff53a, 32'h510e527f, 32'h9b05688c,
-		      32'h1f83d9ab, 32'h5be0cd19};   
-	
-   logic [2047:0] K = {32'h428a2f98, 32'h71374491, 32'hb5c0fbcf,
-		       32'he9b5dba5, 32'h3956c25b, 32'h59f111f1, 32'h923f82a4,
-		       32'hab1c5ed5, 32'hd807aa98, 32'h12835b01, 32'h243185be,
-		       32'h550c7dc3, 32'h72be5d74, 32'h80deb1fe, 32'h9bdc06a7,
-		       32'hc19bf174, 32'he49b69c1, 32'hefbe4786, 32'h0fc19dc6,
-		       32'h240ca1cc, 32'h2de92c6f, 32'h4a7484aa, 32'h5cb0a9dc,
-		       32'h76f988da, 32'h983e5152, 32'ha831c66d, 32'hb00327c8,
-		       32'hbf597fc7, 32'hc6e00bf3, 32'hd5a79147, 32'h06ca6351,
-		       32'h14292967, 32'h27b70a85, 32'h2e1b2138, 32'h4d2c6dfc,
-		       32'h53380d13, 32'h650a7354, 32'h766a0abb, 32'h81c2c92e,
-		       32'h92722c85, 32'ha2bfe8a1, 32'ha81a664b, 32'hc24b8b70,
-		       32'hc76c51a3, 32'hd192e819, 32'hd6990624, 32'hf40e3585,
-		       32'h106aa070, 32'h19a4c116, 32'h1e376c08, 32'h2748774c,
-		       32'h34b0bcb5, 32'h391c0cb3, 32'h4ed8aa4a, 32'h5b9cca4f,
-		       32'h682e6ff3, 32'h748f82ee, 32'h78a5636f, 32'h84c87814,
-		       32'h8cc70208, 32'h90befffa, 32'ha4506ceb, 32'hbef9a3f7,
-		       32'hc67178f2};
-
-   logic [31:0]	  a, b, c, d, e, f, g, h;
-   logic [31:0]   W0, W1, W2, W3, W4, W5, W6, W7, W8, W9;
-   logic [31:0]   W10, W11, W12, W13, W14, W15, W16, W17, W18, W19;
-   logic [31:0]   W20, W21, W22, W23, W24, W25, W26, W27, W28, W29;
-   logic [31:0]   W30, W31, W32, W33, W34, W35, W36, W37, W38, W39;
-   logic [31:0]   W40, W41, W42, W43, W44, W45, W46, W47, W48, W49;
-   logic [31:0]   W50, W51, W52, W53, W54, W55, W56, W57, W58, W59;
-   logic [31:0]   W60, W61, W62, W63;
-   
-   logic [31:0]   a0_out, b0_out, c0_out, d0_out, e0_out, f0_out, g0_out, h0_out;
-   logic [31:0]   a1_out, b1_out, c1_out, d1_out, e1_out, f1_out, g1_out, h1_out;
-   logic [31:0]   a2_out, b2_out, c2_out, d2_out, e2_out, f2_out, g2_out, h2_out;
-   logic [31:0]   a3_out, b3_out, c3_out, d3_out, e3_out, f3_out, g3_out, h3_out;
-   logic [31:0]   a4_out, b4_out, c4_out, d4_out, e4_out, f4_out, g4_out, h4_out;
-   logic [31:0]   a5_out, b5_out, c5_out, d5_out, e5_out, f5_out, g5_out, h5_out;
-   logic [31:0]   a6_out, b6_out, c6_out, d6_out, e6_out, f6_out, g6_out, h6_out;
-   logic [31:0]   a7_out, b7_out, c7_out, d7_out, e7_out, f7_out, g7_out, h7_out;
-   logic [31:0]   a8_out, b8_out, c8_out, d8_out, e8_out, f8_out, g8_out, h8_out;
-   logic [31:0]   a9_out, b9_out, c9_out, d9_out, e9_out, f9_out, g9_out, h9_out;
-
-   logic [31:0]   a10_out, b10_out, c10_out, d10_out, e10_out, f10_out, g10_out, h10_out;
-   logic [31:0]   a11_out, b11_out, c11_out, d11_out, e11_out, f11_out, g11_out, h11_out;
-   logic [31:0]   a12_out, b12_out, c12_out, d12_out, e12_out, f12_out, g12_out, h12_out;
-   logic [31:0]   a13_out, b13_out, c13_out, d13_out, e13_out, f13_out, g13_out, h13_out;
-   logic [31:0]   a14_out, b14_out, c14_out, d14_out, e14_out, f14_out, g14_out, h14_out;
-   logic [31:0]   a15_out, b15_out, c15_out, d15_out, e15_out, f15_out, g15_out, h15_out;
-   logic [31:0]   a16_out, b16_out, c16_out, d16_out, e16_out, f16_out, g16_out, h16_out;
-   logic [31:0]   a17_out, b17_out, c17_out, d17_out, e17_out, f17_out, g17_out, h17_out;
-   logic [31:0]   a18_out, b18_out, c18_out, d18_out, e18_out, f18_out, g18_out, h18_out;
-   logic [31:0]   a19_out, b19_out, c19_out, d19_out, e19_out, f19_out, g19_out, h19_out;   
-
-   logic [31:0]   a20_out, b20_out, c20_out, d20_out, e20_out, f20_out, g20_out, h20_out;
-   logic [31:0]   a21_out, b21_out, c21_out, d21_out, e21_out, f21_out, g21_out, h21_out;
-   logic [31:0]   a22_out, b22_out, c22_out, d22_out, e22_out, f22_out, g22_out, h22_out;
-   logic [31:0]   a23_out, b23_out, c23_out, d23_out, e23_out, f23_out, g23_out, h23_out;
-   logic [31:0]   a24_out, b24_out, c24_out, d24_out, e24_out, f24_out, g24_out, h24_out;
-   logic [31:0]   a25_out, b25_out, c25_out, d25_out, e25_out, f25_out, g25_out, h25_out;
-   logic [31:0]   a26_out, b26_out, c26_out, d26_out, e26_out, f26_out, g26_out, h26_out;
-   logic [31:0]   a27_out, b27_out, c27_out, d27_out, e27_out, f27_out, g27_out, h27_out;
-   logic [31:0]   a28_out, b28_out, c28_out, d28_out, e28_out, f28_out, g28_out, h28_out;
-   logic [31:0]   a29_out, b29_out, c29_out, d29_out, e29_out, f29_out, g29_out, h29_out;
-
-   logic [31:0]   a30_out, b30_out, c30_out, d30_out, e30_out, f30_out, g30_out, h30_out;
-   logic [31:0]   a31_out, b31_out, c31_out, d31_out, e31_out, f31_out, g31_out, h31_out;
-   logic [31:0]   a32_out, b32_out, c32_out, d32_out, e32_out, f32_out, g32_out, h32_out;
-   logic [31:0]   a33_out, b33_out, c33_out, d33_out, e33_out, f33_out, g33_out, h33_out;
-   logic [31:0]   a34_out, b34_out, c34_out, d34_out, e34_out, f34_out, g34_out, h34_out;
-   logic [31:0]   a35_out, b35_out, c35_out, d35_out, e35_out, f35_out, g35_out, h35_out;
-   logic [31:0]   a36_out, b36_out, c36_out, d36_out, e36_out, f36_out, g36_out, h36_out;
-   logic [31:0]   a37_out, b37_out, c37_out, d37_out, e37_out, f37_out, g37_out, h37_out;
-   logic [31:0]   a38_out, b38_out, c38_out, d38_out, e38_out, f38_out, g38_out, h38_out;
-   logic [31:0]   a39_out, b39_out, c39_out, d39_out, e39_out, f39_out, g39_out, h39_out;
-
-   logic [31:0]   a40_out, b40_out, c40_out, d40_out, e40_out, f40_out, g40_out, h40_out;
-   logic [31:0]   a41_out, b41_out, c41_out, d41_out, e41_out, f41_out, g41_out, h41_out;
-   logic [31:0]   a42_out, b42_out, c42_out, d42_out, e42_out, f42_out, g42_out, h42_out;
-   logic [31:0]   a43_out, b43_out, c43_out, d43_out, e43_out, f43_out, g43_out, h43_out;
-   logic [31:0]   a44_out, b44_out, c44_out, d44_out, e44_out, f44_out, g44_out, h44_out;
-   logic [31:0]   a45_out, b45_out, c45_out, d45_out, e45_out, f45_out, g45_out, h45_out;
-   logic [31:0]   a46_out, b46_out, c46_out, d46_out, e46_out, f46_out, g46_out, h46_out;
-   logic [31:0]   a47_out, b47_out, c47_out, d47_out, e47_out, f47_out, g47_out, h47_out;
-   logic [31:0]   a48_out, b48_out, c48_out, d48_out, e48_out, f48_out, g48_out, h48_out;
-   logic [31:0]   a49_out, b49_out, c49_out, d49_out, e49_out, f49_out, g49_out, h49_out;
-
-   logic [31:0]   a50_out, b50_out, c50_out, d50_out, e50_out, f50_out, g50_out, h50_out;
-   logic [31:0]   a51_out, b51_out, c51_out, d51_out, e51_out, f51_out, g51_out, h51_out;
-   logic [31:0]   a52_out, b52_out, c52_out, d52_out, e52_out, f52_out, g52_out, h52_out;
-   logic [31:0]   a53_out, b53_out, c53_out, d53_out, e53_out, f53_out, g53_out, h53_out;
-   logic [31:0]   a54_out, b54_out, c54_out, d54_out, e54_out, f54_out, g54_out, h54_out;
-   logic [31:0]   a55_out, b55_out, c55_out, d55_out, e55_out, f55_out, g55_out, h55_out;
-   logic [31:0]   a56_out, b56_out, c56_out, d56_out, e56_out, f56_out, g56_out, h56_out;
-   logic [31:0]   a57_out, b57_out, c57_out, d57_out, e57_out, f57_out, g57_out, h57_out;
-   logic [31:0]   a58_out, b58_out, c58_out, d58_out, e58_out, f58_out, g58_out, h58_out;
-   logic [31:0]   a59_out, b59_out, c59_out, d59_out, e59_out, f59_out, g59_out, h59_out;
-
-   logic [31:0]   a60_out, b60_out, c60_out, d60_out, e60_out, f60_out, g60_out, h60_out;
-   logic [31:0]   a61_out, b61_out, c61_out, d61_out, e61_out, f61_out, g61_out, h61_out;
-   logic [31:0]   a62_out, b62_out, c62_out, d62_out, e62_out, f62_out, g62_out, h62_out;
-   logic [31:0]   a63_out, b63_out, c63_out, d63_out, e63_out, f63_out, g63_out, h63_out;
-   logic [31:0]   h0, h1, h2, h3, h4, h5, h6, h7;   
-
-   prepare p1 (padded[511:480], padded[479:448], padded[447:416],
-	       padded[415:384], padded[383:352], padded[351:320],
-	       padded[319:288], padded[287:256], padded[255:224],
-	       padded[223:192], padded[191:160], padded[159:128],
-	       padded[127:96], padded[95:64], padded[63:32],
-	       padded[31:0], W0, W1, W2, W3, W4, W5, W6, W7, W8, W9,
-	       W10, W11, W12, W13, W14, W15, W16, W17, W18, W19,
-	       W20, W21, W22, W23, W24, W25, W26, W27, W28, W29,
-	       W30, W31, W32, W33, W34, W35, W36, W37, W38, W39,
-	       W40, W41, W42, W43, W44, W45, W46, W47, W48, W49,
-	       W50, W51, W52, W53, W54, W55, W56, W57, W58, W59,
-	       W60, W61, W62, W63);
-
-   assign a = H[255:224];
-   assign b = H[223:192];
-   assign c = H[191:160];
-   assign d = H[159:128];
-   assign e = H[127:96];
-   assign f = H[95:64];
-   assign g = H[63:32];
-   assign h = H[31:0];
-
-
-                                 
-   intermediate_hash ih1 (a63_out, b63_out, c63_out, d63_out,
-			  e63_out, f63_out, g63_out, h63_out,
-			  a, b, c, d, e, f, g, h,
-			  h0, h1, h2, h3, h4, h5, h6, h7);
-
-   assign hashed = {h0, h1, h2, h3, h4, h5, h6, h7};
-
-
-endmodule // sha_main
 
 module prepare (input logic [31:0] M0, M1, M2, M3,
 		input logic [31:0]  M4, M5, M6, M7,
