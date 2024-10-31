@@ -1,7 +1,7 @@
 module counter64 (
     input  logic clk,        // Clock input
     input  logic rst,        // Reset input (active high)
-    input  logic start,      // Start signal (activates counting)
+    
     output logic [5:0] count // 6-bit counter output (counts from 0 to 63)
 );
 
@@ -20,7 +20,7 @@ module counter64 (
             end else begin
                 count <= count + 1;         // Increment counter
             end
-        end else if (start) begin
+        end else if (count==6'b000000) begin
             count_enable <= 1'b1;           // Enable counting when start is high
         end
     end
