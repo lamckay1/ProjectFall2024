@@ -27,7 +27,7 @@ module top #(parameter MSG_SIZE=96,
            state <= nextstate;
    end
 
-assign start = 1;
+
 
 	always_comb
 	 	case (state)
