@@ -13,26 +13,27 @@ module top #(parameter MSG_SIZE=96,
    sha_padder #(MSG_SIZE,PADDED_SIZE) padder(message, padded);
    
       logic [5:0] count;
-		logic en, en2;
-	
-	  
+	  logic en, en2;
+	counter64 counter( .clk(clk), .rst(reset), .start(init), .count(count) );
+	sha256 #(PADDED_SIZE) main(padded, clk, reset, en, count, hashed);
 
 	typedef enum logic [1:0] {S0, S1, S2} statetype;
    statetype state, nextstate;
 
-	always_ff @(posedge clk, posedge reset)
-     if (reset) state <= S0;
-     else       state <= nextstate;
+	   always_ff @(posedge clk or posedge reset) begin
+       if (reset) 
+           state <= S0;
+       else 
+           state <= nextstate;
+   end
 
-counter64 counter( .clk(clk), .rst(reset), .start(init), .count(count) );
+assign start = 1;
 
 	always_comb
 	 	case (state)
 		S0: begin
-			
-			init<=1;
-			en<=0;
-			en2<=0;
+
+			$display("In state 0");
 			
 			if(start) nextstate<=S1;
 			else nextstate<=S0;
@@ -43,13 +44,16 @@ counter64 counter( .clk(clk), .rst(reset), .start(init), .count(count) );
 		S1:begin 
 				en<=1;
 				en2<=0;
-				init<=0;
+				init<=1;
+				$display("In state 1");
 				if(count<64) nextstate<=S1;
 				else nextstate<=S2;
 		end
 		S2:begin
 			en<=0;
 			en2<=1;
+			init<=0;
+			$display("In state 2");
 			nextstate<=S0;
 		end
 		default:begin
@@ -60,7 +64,7 @@ counter64 counter( .clk(clk), .rst(reset), .start(init), .count(count) );
 		
 
 
-			sha256 #(PADDED_SIZE) main(padded, clk, reset, en,count, hashed);
+			
 	  
 		
 endmodule // sha_256
@@ -727,13 +731,16 @@ module counter64 (
 
     // Internal enable signal for counting
     logic count_enable;
-	logic [1:0]debugvariable;
+	logic [1:0] debugvariable;
 	always_ff @(negedge rst) begin
-		if(start) debugvariable<=0;
-		else if(!start)debugvariable<=1;
-		else if(start==2'bx) debugvariable<=2;
-		$display("In counter");
-	end
+    if (start) 
+        debugvariable <= 0;
+    else if (!start)
+        debugvariable <= 1;
+    else 
+        debugvariable <= 2; 
+    $display("In debug: debugvariable = %b", debugvariable);
+end
 	
     // Always block to handle reset and counting
     always_ff @(posedge clk or posedge rst) begin
@@ -750,7 +757,7 @@ module counter64 (
                 count <= count + 1;         // Increment counter
             end
         end else if (start) begin
-			$display("Start works");
+			$display("Variable 'start' works");
             count_enable <= 1'b1;           // Enable counting when start is high
         end
     end
