@@ -4,7 +4,7 @@
 `timescale 1ns / 1ps
 module top #(parameter MSG_SIZE=96,
 	     parameter PADDED_SIZE = 512)
-   (input logic [MSG_SIZE-1:0] message, input logic clk , input logic reset, input logic start,
+   (input logic [MSG_SIZE-1:0] message, input logic clk , reset,  start,
     output logic [255:0] hashed);
 	
 
@@ -25,8 +25,7 @@ module top #(parameter MSG_SIZE=96,
            state <= S0;
        else 
            state <= nextstate;
-   end
-
+       end
 
 
 	always_comb
@@ -734,12 +733,12 @@ module counter64 (
 	logic [1:0] debugvariable;
 	always_ff @(negedge rst) begin
     if (start) 
-        debugvariable <= 0;
+        debugvariable = 0;
     else if (!start)
-        debugvariable <= 1;
+        debugvariable = 1;
     else 
-        debugvariable <= 2; 
-    $display("In debug: debugvariable = %b", debugvariable);
+        debugvariable = 2; 
+    $display("In debug: debugvariable = %h", debugvariable);
 end
 	
     // Always block to handle reset and counting
