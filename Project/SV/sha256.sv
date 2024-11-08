@@ -1,19 +1,35 @@
 //
 // Secure Hash Standard (SHA-256)
 //
+`timescale 1ns / 1ps
+module flopenr #(parameter WIDTH = 32) (
+  input  logic             clk, reset, en,
+  input  logic [WIDTH-1:0] d, 
+  output logic [WIDTH-1:0] q);
 
-module top #(parameter MSG_SIZE=24,
-	     parameter PADDED_SIZE = 512)
-   (input logic [MSG_SIZE-1:0] message, input logic clk , reset, en,
-    output logic [255:0] hashed);
+  always_ff @(posedge clk)
+    if (reset)   q <= #1 0;
+    else if (en) q <= #1 d;
+endmodule
 
-   logic [PADDED_SIZE-1:0] padded;
-	sha_padder #(MSG_SIZE,PADDED_SIZE) padder(message, padded);
-   
-      
+module flopenrhashed #(parameter WIDTH = 256) (
+  input  logic             clk, reset, en, 
+  input  logic [31:0] a,b,c,d,e,f,g,h, 
+  output logic [WIDTH-1:0] hash);
 
+  always_ff @(posedge clk)
+    if (reset)   hash <= #1 0;
+    else if (en) hash <= #1 {a,b,c,d,e,f,g,h};
+endmodule 
+module counter64 (
+    input  logic clk,        // Clock input
+    input  logic rst,        // Reset input (active high)
+    input  logic start,      // Start signal (activates counting)
+    output logic [5:0] count // 6-bit counter output (counts from 0 to 63)
+);
 
-	  logic count_enable;
+    // Internal enable signal for counting
+    logic count_enable;
 
     // Always block to handle reset and counting
     always_ff @(posedge clk or posedge rst) begin
@@ -27,12 +43,27 @@ module top #(parameter MSG_SIZE=24,
             end else begin
                 count <= count + 1;         // Increment counter
             end
-        end else if (count==6'b000000) begin
+        end else if (start) begin
             count_enable <= 1'b1;           // Enable counting when start is high
         end
     end
 
-	typedef enum logic [1:0] {S0, S1,S2} statetype;
+endmodule
+
+module top #(parameter MSG_SIZE=24,
+	     parameter PADDED_SIZE = 512)
+   (input logic [MSG_SIZE-1:0] message, input logic clk , input logic reset, input logic start,
+    output logic [255:0] hashed);
+
+   logic [PADDED_SIZE-1:0] padded;
+	sha_padder #(MSG_SIZE,PADDED_SIZE) padder(message, padded);
+   
+      logic [5:0] count;
+		logic en, en2;
+	counter64 counter( clk, reset, start, count );
+	  
+
+	typedef enum logic [1:0] {S0, S1, S2} statetype;
    statetype state, nextstate;
 
 	always_ff @(posedge clk, posedge reset)
@@ -45,21 +76,31 @@ module top #(parameter MSG_SIZE=24,
 	 	case (state)
 		S0: begin
 
-			en<=1;
-
-			if(count<64) nextstate<=S0;
-			else nextstate<=S1;
+			en<=0;
+			en2<=0;
+			
+			if(start) nextstate<=S1;
+			else nextstate<=S0;
+			
 			
 			end
 
 		S1:begin 
-				en<=0;
+				en<=1;
+				en2<=0;
+				if(count<64) nextstate<=S1;
+				else nextstate<=S2;
+		end
+		S2:begin
+			en<=0;
+			en2<=1;
+			nextstate<=S0;
 		end
 	endcase
 		
 
 
-			sha256 #(PADDED_SIZE) main(padded, hashed, clk, reset, en);
+			sha256 #(PADDED_SIZE) main(padded, clk, reset, en,count, hashed);
 	  
 		
 endmodule // sha_256
@@ -76,7 +117,7 @@ module sha_padder #(parameter MSG_SIZE = 24,
 endmodule // sha_padder
 
 module sha256 #(parameter PADDED_SIZE = 512)
-   (input logic [PADDED_SIZE-1:0] padded,input logic clk , reset, en,
+   (input logic [PADDED_SIZE-1:0] padded, input logic clk , reset, en, input logic [5:0]count,
     output logic [255:0] hashed);   
 
    logic [255:0] H = {32'h6a09e667, 32'hbb67ae85,
@@ -117,19 +158,12 @@ module sha256 #(parameter PADDED_SIZE = 512)
 	 logic [31:0] W50, W51, W52, W53, W54; 
 	 logic [31:0] W55, W56, W57, W58, W59;
 	 logic [31:0] W60, W61, W62, W63;
-    logic [31:0] h1, h2, h3, h4, h5, h6, h7;
+    logic [31:0] h0o, h1o, h2o, h3o, h4o, h5o, h6o, h7o;
     logic [31:0] Kin, Win;
-    logic [5:0] count;
+   
 
    // Initialize a through h
-  assign a = H[255:224];
-   assign b = H[223:192];
-   assign c = H[191:160];
-   assign d = H[159:128];
-   assign e = H[127:96];
-   assign f = H[95:64];
-   assign g = H[63:32];
-   assign h = H[31:0];
+
 
 
 	
@@ -146,43 +180,13 @@ prepare p1 (padded[511:480], padded[479:448], padded[447:416],
                W50, W51, W52, W53, W54, W55, W56, W57, W58, W59,
                W60, W61, W62, W63);
 
-               always_ff @(posedge clk)
-                  if (reset)   regA_out <= #1 0;
-                  else if (en) regA_out <= #1 a0_out;
 
-               always_ff @(posedge clk)
-                  if (reset)   regB_out <= #1 0;
-                  else if (en) regB_out <= #1 b0_out;
-
-               always_ff @(posedge clk)
-                  if (reset)   regC_out <= #1 0;
-                  else if (en) regC_out <= #1 c0_out;
-
-               always_ff @(posedge clk)
-                  if (reset)   regD_out <= #1 0;
-                  else if (en) regD_out <= #1 d0_out;
-
-               always_ff @(posedge clk)
-                  if (reset)   regE_out <= #1 0;
-                  else if (en) regE_out <= #1 e0_out;
-
-               always_ff @(posedge clk)
-                  if (reset)   regF_out <= #1 0;
-                  else if (en) regF_out <= #1 f0_out;
-
-               always_ff @(posedge clk)
-                  if (reset)   regG_out <= #1 0;
-                  else if (en) regG_out <= #1 g0_out;
-
-               always_ff @(posedge clk)
-                  if (reset)   regH_out <= #1 0;
-                  else if (en) regH_out <= #1 h0_out;
 
 	
        
  
 	
-	always_ff @(posedge)
+	always_ff @(posedge clk) begin
 		if (count == 0) Win <= W0;
 else if (count == 1) Win <= W1;
 else if (count == 2) Win <= W2;
@@ -248,9 +252,9 @@ else if (count == 61) Win <= W61;
 else if (count == 62) Win <= W62;
 else if (count == 63) Win <= W63;
 else Win <= 0;
+	end
 
 
-always_ff @(posedge)
 		always_ff @(posedge clk) begin
     if (count == 0) Kin <= K[2047:2016];
     else if (count == 1) Kin <= K[2015:1984];
@@ -318,23 +322,50 @@ always_ff @(posedge)
     else if (count == 63) Kin <= K[31:0];
 end
 
+logic first;
+ assign first = (count==0);
+   assign a = first ? H[255:224] : regA_out;
+   assign b = first ? H[223:192] : regB_out;
+   assign c = first ? H[191:160] : regC_out;
+   assign d = first ? H[159:128] : regD_out;
+   assign e = first ? H[127:96] : regE_out;
+   assign f = first ? H[95:64] : regF_out;
+   assign g = first ? H[63:32] : regG_out;
+   assign h = first ? H[31:0] : regH_out;
 
-
-main_comp mc01 (regA_out, regB_out, regC_out, regD_out, 
-		   regE_out, regF_out, regG_out, regH_out, 
+ main_comp mc01 (a, b, c, d, e, f, g, h,
 		   Kin, Win,
 		   a0_out, b0_out, c0_out, d0_out, 
 		   e0_out, f0_out, g0_out, h0_out);
 
 
+		         flopenr #(32) regA (clk, reset, en, a0_out, regA_out);
+			     flopenr #(32) regB (clk, reset, en, b0_out, regB_out);
+				 flopenr #(32) regC (clk, reset, en, c0_out, regC_out);
+			     flopenr #(32) regD (clk, reset, en, d0_out, regD_out);
+				 flopenr #(32) regE (clk, reset, en, e0_out, regE_out);
+			     flopenr #(32) regF (clk, reset, en, f0_out, regF_out);
+				 flopenr #(32) regG (clk, reset, en, g0_out, regG_out);
+			     flopenr #(32) regH (clk, reset, en, h0_out, regH_out);
 
 
-intermediate_hash ih1 (an64, bn64, cn64, dn64, en64, fn64, gn64, hn64,
-			   			   a, b, c, d, e, f, g, h, 
+
+				 
+
+
+
+
+intermediate_hash ih1 (a, b, c, d, e, f, g, h, regA_out,regB_out,regC_out,regD_out,regE_out,regF_out,regG_out,regH_out,
+			   			   
 			   			   h0o, h1o, h2o, h3o, h4o, h5o, h6o, h7o);
+
+
+
+flopenrhashed #(256) reghashed (clk, reset, en2, h0o, h1o, h2o, h3o, h4o, h5o, h6o, h7o,hashed);
+				 
 	
    // Final output
-	assign hashed = {h0o, h1o, h2o, h3o, h4o, h5o, h6o, h7o};
+
 
 endmodule // sha_main
 
