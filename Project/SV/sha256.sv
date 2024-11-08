@@ -2,65 +2,19 @@
 // Secure Hash Standard (SHA-256)
 //
 `timescale 1ns / 1ps
-module flopenr #(parameter WIDTH = 32) (
-  input  logic             clk, reset, en,
-  input  logic [WIDTH-1:0] d, 
-  output logic [WIDTH-1:0] q);
-
-  always_ff @(posedge clk)
-    if (reset)   q <= #1 0;
-    else if (en) q <= #1 d;
-endmodule
-
-module flopenrhashed #(parameter WIDTH = 256) (
-  input  logic             clk, reset, en, 
-  input  logic [31:0] a,b,c,d,e,f,g,h, 
-  output logic [WIDTH-1:0] hash);
-
-  always_ff @(posedge clk)
-    if (reset)   hash <= #1 0;
-    else if (en) hash <= #1 {a,b,c,d,e,f,g,h};
-endmodule 
-module counter64 (
-    input  logic clk,        // Clock input
-    input  logic rst,        // Reset input (active high)
-    input  logic start,      // Start signal (activates counting)
-    output logic [5:0] count // 6-bit counter output (counts from 0 to 63)
-);
-
-    // Internal enable signal for counting
-    logic count_enable;
-
-    // Always block to handle reset and counting
-    always_ff @(posedge clk or posedge rst) begin
-        if (rst) begin
-            count <= 6'b000000;             // Reset counter to 0
-            count_enable <= 1'b0;           // Disable counting on reset
-        end else if (count_enable) begin
-            if (count == 6'b111111) begin   // End of count
-               count_enable <= 1'b0;
-	       count <= 6'h0;	            // Reset count to 0
-            end else begin
-                count <= count + 1;         // Increment counter
-            end
-        end else if (start) begin
-            count_enable <= 1'b1;           // Enable counting when start is high
-        end
-    end
-
-endmodule
-
-module top #(parameter MSG_SIZE=24,
+module top #(parameter MSG_SIZE=96,
 	     parameter PADDED_SIZE = 512)
    (input logic [MSG_SIZE-1:0] message, input logic clk , input logic reset, input logic start,
     output logic [255:0] hashed);
+	
 
    logic [PADDED_SIZE-1:0] padded;
-	sha_padder #(MSG_SIZE,PADDED_SIZE) padder(message, padded);
+   logic init;
+   sha_padder #(MSG_SIZE,PADDED_SIZE) padder(message, padded);
    
       logic [5:0] count;
 		logic en, en2;
-	counter64 counter( clk, reset, start, count );
+	
 	  
 
 	typedef enum logic [1:0] {S0, S1, S2} statetype;
@@ -70,12 +24,13 @@ module top #(parameter MSG_SIZE=24,
      if (reset) state <= S0;
      else       state <= nextstate;
 
-
+counter64 counter( .clk(clk), .rst(reset), .start(init), .count(count) );
 
 	always_comb
 	 	case (state)
 		S0: begin
-
+			
+			init<=1;
 			en<=0;
 			en2<=0;
 			
@@ -88,6 +43,7 @@ module top #(parameter MSG_SIZE=24,
 		S1:begin 
 				en<=1;
 				en2<=0;
+				init<=0;
 				if(count<64) nextstate<=S1;
 				else nextstate<=S2;
 		end
@@ -96,6 +52,10 @@ module top #(parameter MSG_SIZE=24,
 			en2<=1;
 			nextstate<=S0;
 		end
+		default:begin
+			nextstate<=S0;
+		end
+
 	endcase
 		
 
@@ -105,7 +65,7 @@ module top #(parameter MSG_SIZE=24,
 		
 endmodule // sha_256
 
-module sha_padder #(parameter MSG_SIZE = 24,
+module sha_padder #(parameter MSG_SIZE = 96,
                     parameter PADDED_SIZE = 512)
    (input logic [MSG_SIZE-1:0] message,
     output logic [PADDED_SIZE-1:0] padded);
@@ -737,5 +697,64 @@ module sigma1 (input logic [31:0] x, output logic [31:0] sigma1);
 
 endmodule// sigma1
 
-     
+ `timescale 1ns / 1ps
+module flopenr #(parameter WIDTH = 32) (
+  input  logic             clk, reset, en,
+  input  logic [WIDTH-1:0] d, 
+  output logic [WIDTH-1:0] q);
+
+  always_ff @(posedge clk)
+    if (reset)   q <= #1 0;
+    else if (en) q <= #1 d;
+endmodule
+`timescale 1ns / 1ps
+module flopenrhashed #(parameter WIDTH = 256) (
+  input  logic             clk, reset, en, 
+  input  logic [31:0] a,b,c,d,e,f,g,h, 
+  output logic [WIDTH-1:0] hash);
+
+  always_ff @(posedge clk)
+    if (reset)   hash <= #1 0;
+    else if (en) hash <= #1 {a,b,c,d,e,f,g,h};
+endmodule 
+`timescale 1ns / 1ps
+module counter64 (
+    input  logic clk,        // Clock input
+    input  logic rst,        // Reset input (active high)
+    input  logic start,      // Start signal (activates counting)
+    output logic [5:0] count // 6-bit counter output (counts from 0 to 63)
+);
+
+    // Internal enable signal for counting
+    logic count_enable;
+	logic [1:0]debugvariable;
+	always_ff @(negedge rst) begin
+		if(start) debugvariable<=0;
+		else if(!start)debugvariable<=1;
+		else if(start==2'bx) debugvariable<=2;
+		$display("In counter");
+	end
+	
+    // Always block to handle reset and counting
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
+			$display("Reset triggered");
+            count <= 6'b000000;             // Reset counter to 0
+            count_enable <= 1'b0;           // Disable counting on reset
+        end else if (count_enable) begin
+            if (count == 6'b111111) begin   // End of count
+               count_enable <= 1'b0;
+	       count <= 6'h0;	            // Reset count to 0
+            end else begin
+				$display("Count Increased");
+                count <= count + 1;         // Increment counter
+            end
+        end else if (start) begin
+			$display("Start works");
+            count_enable <= 1'b1;           // Enable counting when start is high
+        end
+    end
+
+endmodule
+
    
