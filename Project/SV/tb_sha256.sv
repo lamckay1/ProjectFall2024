@@ -44,9 +44,9 @@ module stimulus;
    always @(posedge clk)
      begin
         // Add message here : "Hello, SHA-256!"
-        #1 message = 120'h48656c6c6f2c205348412d32353621;
+        #1 message = 96'h47756e647920526f636b7321;
         // Expected result
-        #0 result = 256'hd0e8b8f11c98f369016eb2ed3c541e1f01382f9d5b3104c9ffd06b6175a46271;
+        #0 result = 256'h6afba0bb92737254ed97dd21d5ac868b2226417b8241e020a0996ed2c1ac6b27;
      end
 
  initial
@@ -54,7 +54,8 @@ module stimulus;
   #0 reset = 1'b1;
   #21 reset = 1'b0;
   #0 start = 1'b1;
-  #1000;
+  #800 start = 1'b0;
+ 
   $fdisplay(desc3, "%h %h || %h || %b", message, hashed, result, (result == hashed));
  end
 
