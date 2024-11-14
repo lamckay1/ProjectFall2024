@@ -4,62 +4,28 @@
 `timescale 1ns / 1ps
 module top #(parameter MSG_SIZE=96,
 	     parameter PADDED_SIZE = 512)
-   (input logic [MSG_SIZE-1:0] message, input logic clk , reset,  start,
+   (input logic [MSG_SIZE-1:0] message, input logic clk , reset, start,
     output logic [255:0] hashed);
 	
-
    logic [PADDED_SIZE-1:0] padded;
-   logic init;
+   
+	logic [31:0]a,b,c,d,e,f,g,h;
+
    sha_padder #(MSG_SIZE,PADDED_SIZE) padder(message, padded);
    
       logic [5:0] count;
 	  logic en, en2;
+	  logic init;
+	  
 	counter64 counter( .clk(clk), .rst(reset), .start(init), .count(count) );
-	sha256 #(PADDED_SIZE) main(padded, clk, reset, en, count, hashed);
+	sha256 #(PADDED_SIZE) main(padded, clk, reset, en,en2, count, init, hashed);
+	fsmcontrol fsm1( start, ~clk, reset, count, en, en2, init);
+	
+	
 
-	typedef enum logic [1:0] {S0, S1, S2} statetype;
-   statetype state, nextstate;
+				 
 
-	   always_ff @(posedge clk or posedge reset) begin
-       if (reset) 
-           state <= S0;
-       else 
-           state <= nextstate;
-       end
-
-
-	always_comb
-	 	case (state)
-		S0: begin
-
-			$display("In state 0");
-			
-			if(start) nextstate<=S1;
-			else nextstate<=S0;
-			
-			
-			end
-
-		S1:begin 
-				en<=1;
-				en2<=0;
-				init<=1;
-				$display("In state 1");
-				if(count<64) nextstate<=S1;
-				else nextstate<=S2;
-		end
-		S2:begin
-			en<=0;
-			en2<=1;
-			init<=0;
-			$display("In state 2");
-			nextstate<=S0;
-		end
-		default:begin
-			nextstate<=S0;
-		end
-
-	endcase
+	
 		
 
 
@@ -80,8 +46,8 @@ module sha_padder #(parameter MSG_SIZE = 96,
 endmodule // sha_padder
 
 module sha256 #(parameter PADDED_SIZE = 512)
-   (input logic [PADDED_SIZE-1:0] padded, input logic clk , reset, en, input logic [5:0]count,
-    output logic [255:0] hashed);   
+   (input logic [PADDED_SIZE-1:0] padded, input logic clk , reset, en, en2, input logic [5:0]count,logic first,
+    output logic [255:0] hashed);
 
    logic [255:0] H = {32'h6a09e667, 32'hbb67ae85,
 		      32'h3c6ef372, 32'ha54ff53a, 32'h510e527f, 32'h9b05688c,
@@ -106,7 +72,7 @@ module sha256 #(parameter PADDED_SIZE = 512)
 		       32'hc67178f2};
 
    // Define your intermediate variables here (forgetting them assumes variables are 1-bit)
-  logic [31:0] a,b,c,d,e,f,g,h;
+  logic [31:0] a, b, c, d, e, f, g, h;
    logic [31:0]   a0_out, b0_out, c0_out, d0_out, e0_out, f0_out, g0_out, h0_out, regA_out, regB_out, regC_out,regD_out,regE_out,regF_out,regG_out,regH_out;
     logic [31:0] W0, W1, W2, W3, W4;
 	 logic [31:0] W5, W6, W7, W8, W9;
@@ -285,8 +251,8 @@ else Win <= 0;
     else if (count == 63) Kin <= K[31:0];
 end
 
-logic first;
- assign first = (count==0);
+   
+   
    assign a = first ? H[255:224] : regA_out;
    assign b = first ? H[223:192] : regB_out;
    assign c = first ? H[191:160] : regC_out;
@@ -315,10 +281,11 @@ logic first;
 
 				 
 
+  
 
 
 
-intermediate_hash ih1 (a, b, c, d, e, f, g, h, regA_out,regB_out,regC_out,regD_out,regE_out,regF_out,regG_out,regH_out,
+intermediate_hash ih1 (regA_out,regB_out,regC_out,regD_out,regE_out,regF_out,regG_out,regH_out, H[255:224],H[223:192],H[191:160],H[159:128],H[127:96],H[95:64],H[63:32],H[31:0],
 			   			   
 			   			   h0o, h1o, h2o, h3o, h4o, h5o, h6o, h7o);
 
@@ -331,6 +298,64 @@ flopenrhashed #(256) reghashed (clk, reset, en2, h0o, h1o, h2o, h3o, h4o, h5o, h
 
 
 endmodule // sha_main
+
+
+module fsmcontrol(input logic start,clk,reset, input logic [5:0] count, output logic en, en2, init);
+
+
+typedef enum logic [1:0] {S0, S1, S2,S3} statetype;
+   statetype state, nextstate;
+
+	   always_ff @(posedge clk or posedge reset) begin
+       if (reset) 
+           state <= S0;
+       else 
+           state <= nextstate;
+       end
+
+
+
+always_comb
+	 	case (state)
+		S0: begin
+
+			$display("In state 0");
+			
+			
+			if(start) nextstate<=S1;
+			else nextstate<=S0;
+			
+			
+			end
+
+		S1:begin 
+				en<=1'b1;
+				init<=1'b1;
+				$display("In state 1");
+				nextstate<=S2;
+		end
+
+		S2:begin
+			en<=1;
+			en2<=0;
+			init<=0;
+			$display("In state 2");
+			if(count < 64)nextstate<=S3;
+			else nextstate<=S2;
+		end
+		S3:begin
+			en<=0;
+			en2<=1;
+		end
+		default:begin
+			nextstate<=S0;
+		end
+
+	endcase
+
+endmodule
+
+
 
 module prepare (input logic [31:0] M0, M1, M2, M3,
 		input logic [31:0]  M4, M5, M6, M7,
@@ -710,6 +735,7 @@ module flopenr #(parameter WIDTH = 32) (
     if (reset)   q <= #1 0;
     else if (en) q <= #1 d;
 endmodule
+
 `timescale 1ns / 1ps
 module flopenrhashed #(parameter WIDTH = 256) (
   input  logic             clk, reset, en, 
@@ -730,21 +756,11 @@ module counter64 (
 
     // Internal enable signal for counting
     logic count_enable;
-	logic [1:0] debugvariable;
-	always_ff @(negedge rst) begin
-    if (start) 
-        debugvariable = 0;
-    else if (!start)
-        debugvariable = 1;
-    else 
-        debugvariable = 2; 
-    $display("In debug: debugvariable = %h", debugvariable);
-end
 	
     // Always block to handle reset and counting
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
-			$display("Reset triggered");
+			
             count <= 6'b000000;             // Reset counter to 0
             count_enable <= 1'b0;           // Disable counting on reset
         end else if (count_enable) begin
@@ -752,15 +768,20 @@ end
                count_enable <= 1'b0;
 	       count <= 6'h0;	            // Reset count to 0
             end else begin
-				$display("Count Increased");
+				
                 count <= count + 1;         // Increment counter
             end
         end else if (start) begin
-			$display("Variable 'start' works");
             count_enable <= 1'b1;           // Enable counting when start is high
         end
     end
 
 endmodule
 
-   
+   module mux2 #(parameter WIDTH = 32) (
+  input  logic [WIDTH-1:0] a_out, regA_out, 
+  input  logic             en,
+  output logic [WIDTH-1:0] a);
+
+  assign a = en ? a_out : regA_out; 
+endmodule
