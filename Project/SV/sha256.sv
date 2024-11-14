@@ -17,7 +17,7 @@ module top #(parameter MSG_SIZE=96,
 	  logic en, en2;
 	  logic init;
 	  
-	counter64 counter( .clk(clk), .rst(reset), .start(init), .count(count) );
+	counter64 counter( ~clk, reset, start, count );
 	sha256 #(PADDED_SIZE) main(padded, clk, reset, en,en2, count, init, hashed);
 	fsmcontrol fsm1( start, ~clk, reset, count, en, en2, init);
 	
@@ -766,9 +766,9 @@ module counter64 (
         end else if (count_enable) begin
             if (count == 6'b111111) begin   // End of count
                count_enable <= 1'b0;
-	       count <= 6'h0;	            // Reset count to 0
+	       	   count <= 6'h0;	            // Reset count to 0
             end else begin
-				
+				$display("%d",count);
                 count <= count + 1;         // Increment counter
             end
         end else if (start) begin
