@@ -1,0 +1,14 @@
+#-----------------------------------------------------------
+# Vivado v2023.2 (64-bit)
+# SW Build 4029153 on Fri Oct 13 20:14:34 MDT 2023
+# IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+# SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+# Start of session at: Thu Oct 10 11:20:59 2024
+# Process ID: 34504
+# Current directory: C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.runs/synth_1
+# Command line: vivado.exe -log top_demo.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source top_demo.tcl
+# Log file: C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.runs/synth_1/top_demo.vds
+# Journal file: C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.runs/synth_1\vivado.jou
+# Running On: CEAT-ENDV350-01, OS: Windows, CPU Frequency: 2496 MHz, CPU Physical cores: 8, Host memory: 68426 MB
+#-----------------------------------------------------------
+source top_demo.tcl -notrace

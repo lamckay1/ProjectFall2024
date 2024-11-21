@@ -1,0 +1,59 @@
+#-----------------------------------------------------------
+# Vivado v2023.2 (64-bit)
+# SW Build 4029153 on Fri Oct 13 20:14:34 MDT 2023
+# IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+# SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+# Start of session at: Thu Oct 10 10:55:45 2024
+# Process ID: 26288
+# Current directory: C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent4540 C:\Users\lcardie\Downloads\lab2-2024\Lab2\Vivado\Lab1\Lab1.xpr
+# Log file: C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/vivado.log
+# Journal file: C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1\vivado.jou
+# Running On: CEAT-ENDV350-01, OS: Windows, CPU Frequency: 2496 MHz, CPU Physical cores: 8, Host memory: 68426 MB
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.xpr
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280_es:part0:1.0 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/es/rev_a/1.0/board.xml as part xcve2802-vsvh1760-2lp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280_es:part0:1.1 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/es/rev_a/1.1/board.xml as part xcve2802-vsvh1760-2lp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280_es_revb:part0:1.0 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/es/rev_b/1.0/board.xml as part xcve2802-vsvh1760-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280_es_revb:part0:1.1 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/es/rev_b/1.1/board.xml as part xcve2802-vsvh1760-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vhk158_es:part0:1.0 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vhk158/es/1.0/board.xml as part xcvh1582-vsva3697-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vhk158_es:part0:1.1 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vhk158/es/1.1/board.xml as part xcvh1582-vsva3697-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu208ld:part0:2.0 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu208ld/production/2.0/board.xml as part xczu58dr-fsvg1517-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu216ld:part0:2.0 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu216ld/production/2.0/board.xml as part xczu59dr-ffvf1760-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu670:part0:2.0 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu670/2.0/board.xml as part xczu67dr-fsve1156-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu670ld:part0:1.0 available at C:/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu670ld/1.0/board.xml as part xczu57dr-fsve1156-2-i specified in board_part file is either invalid or not available
+INFO: [Project 1-313] Project file moved from 'C:/Users/James Stine/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-25664-DESKTOP-4ROMOJN/PrjAr/_X_' since last save.
+INFO: [filemgmt 56-3] Default IP Output Path : Could not find the directory 'C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.gen/sources_1'.
+WARNING: [filemgmt 56-3] IPUserFilesDir: Could not find the directory 'C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.ip_user_files'.
+Scanning sources...
+Finished scanning sources
+INFO: [Project 1-1877] Auto incremental dir location 'C:/../OneDrive - Oklahoma A and M System/Desktop/dldfall2024/Lab1/Vivado/Lab1/Lab1.srcs/utils_1/imports/synth_1' of run 'synth_1' is not writable, setting it to default location 'C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.srcs/utils_1/imports/synth_1'.
+INFO: [Project 1-1877] Auto incremental dir location 'C:/../OneDrive - Oklahoma A and M System/Desktop/dldfall2024/Lab1/Vivado/Lab1/Lab1.srcs/utils_1/imports/synth_1' of run 'synth_1' is not writable, setting it to default location 'C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.srcs/utils_1/imports/synth_1'.
+INFO: [Project 1-1877] Auto incremental dir location 'C:/../OneDrive - Oklahoma A and M System/Desktop/dldfall2024/Lab1/Vivado/Lab1/Lab1.srcs/utils_1/imports/impl_1' of run 'impl_1' is not writable, setting it to default location 'C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.srcs/utils_1/imports/impl_1'.
+INFO: [Project 1-1877] Auto incremental dir location 'C:/../OneDrive - Oklahoma A and M System/Desktop/dldfall2024/Lab1/Vivado/Lab1/Lab1.srcs/utils_1/imports/impl_1' of run 'impl_1' is not writable, setting it to default location 'C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.srcs/utils_1/imports/impl_1'.
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2023.2/data/ip'.
+open_project: Time (s): cpu = 00:00:19 ; elapsed = 00:00:08 . Memory (MB): peak = 1596.164 ; gain = 278.340
+update_compile_order -fileset sources_1
+add_files -norecurse C:/Users/lcardie/Downloads/lab2-2024/Lab2/SV/sha256_stub.sv
+update_compile_order -fileset sources_1
+WARNING: [filemgmt 56-199] Attempt to get parsing info during refresh. "On-the-fly" syntax checking information may be incorrect. [C:\Users\lcardie\Downloads\lab2-2024\Lab2\SV\sha256_stub.sv:]
+WARNING: [filemgmt 56-199] Attempt to get parsing info during refresh. "On-the-fly" syntax checking information may be incorrect. [C:\Users\lcardie\Downloads\lab2-2024\Lab2\Vivado\Lab1\Lab1.srcs\sources_1\imports\Desktop\top_demo.sv:]
+ERROR: [Common 17-180] Spawn failed: No error
+update_compile_order -fileset sources_1
+WARNING: [filemgmt 56-199] Attempt to get parsing info during refresh. "On-the-fly" syntax checking information may be incorrect. [C:\Users\lcardie\Downloads\lab2-2024\Lab2\SV\sha256_stub.sv:]
+WARNING: [filemgmt 56-199] Attempt to get parsing info during refresh. "On-the-fly" syntax checking information may be incorrect. [C:\Users\lcardie\Downloads\lab2-2024\Lab2\Vivado\Lab1\Lab1.srcs\sources_1\imports\Desktop\top_demo.sv:]
+ERROR: [Common 17-180] Spawn failed: No error
+WARNING: [filemgmt 56-199] Attempt to get parsing info during refresh. "On-the-fly" syntax checking information may be incorrect. [C:\Users\lcardie\Downloads\lab2-2024\Lab2\SV\sha256_stub.sv:]
+WARNING: [filemgmt 56-199] Attempt to get parsing info during refresh. "On-the-fly" syntax checking information may be incorrect. [C:\Users\lcardie\Downloads\lab2-2024\Lab2\Vivado\Lab1\Lab1.srcs\sources_1\imports\Desktop\top_demo.sv:]
+ERROR: [Common 17-180] Spawn failed: No error
+launch_runs synth_1 -jobs 8
+CRITICAL WARNING: [HDL 9-1206] Syntax error near 'begin' [C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.srcs/sources_1/imports/Desktop/top_demo.sv:56]
+CRITICAL WARNING: [HDL 9-3116] 's' is not a type [C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.srcs/sources_1/imports/Desktop/top_demo.sv:59]
+CRITICAL WARNING: [HDL 9-3116] 's' is not a type [C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.srcs/sources_1/imports/Desktop/top_demo.sv:60]
+CRITICAL WARNING: [HDL 9-3116] 's' is not a type [C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.srcs/sources_1/imports/Desktop/top_demo.sv:61]
+WARNING: [Vivado 12-7122] Auto Incremental Compile:: No reference checkpoint was found in run synth_1. Auto-incremental flow will not be run, the standard flow will be run instead.
+[Thu Oct 10 11:20:59 2024] Launched synth_1...
+Run output will be captured here: C:/Users/lcardie/Downloads/lab2-2024/Lab2/Vivado/Lab1/Lab1.runs/synth_1/runme.log
