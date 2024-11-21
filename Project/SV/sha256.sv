@@ -108,152 +108,159 @@ prepare p1 (padded[511:480], padded[479:448], padded[447:416],
        
  
 	
-	always_ff @(posedge clk) begin
-		if (count == 0) Win <= W0;
-else if (count == 1) Win <= W1;
-else if (count == 2) Win <= W2;
-else if (count == 3) Win <= W3;
-else if (count == 4) Win <= W4;
-else if (count == 5) Win <= W5;
-else if (count == 6) Win <= W6;
-else if (count == 7) Win <= W7;
-else if (count == 8) Win <= W8;
-else if (count == 9) Win <= W9;
-else if (count == 10) Win <= W10;
-else if (count == 11) Win <= W11;
-else if (count == 12) Win <= W12;
-else if (count == 13) Win <= W13;
-else if (count == 14) Win <= W14;
-else if (count == 15) Win <= W15;
-else if (count == 16) Win <= W16;
-else if (count == 17) Win <= W17;
-else if (count == 18) Win <= W18;
-else if (count == 19) Win <= W19;
-else if (count == 20) Win <= W20;
-else if (count == 21) Win <= W21;
-else if (count == 22) Win <= W22;
-else if (count == 23) Win <= W23;
-else if (count == 24) Win <= W24;
-else if (count == 25) Win <= W25;
-else if (count == 26) Win <= W26;
-else if (count == 27) Win <= W27;
-else if (count == 28) Win <= W28;
-else if (count == 29) Win <= W29;
-else if (count == 30) Win <= W30;
-else if (count == 31) Win <= W31;
-else if (count == 32) Win <= W32;
-else if (count == 33) Win <= W33;
-else if (count == 34) Win <= W34;
-else if (count == 35) Win <= W35;
-else if (count == 36) Win <= W36;
-else if (count == 37) Win <= W37;
-else if (count == 38) Win <= W38;
-else if (count == 39) Win <= W39;
-else if (count == 40) Win <= W40;
-else if (count == 41) Win <= W41;
-else if (count == 42) Win <= W42;
-else if (count == 43) Win <= W43;
-else if (count == 44) Win <= W44;
-else if (count == 45) Win <= W45;
-else if (count == 46) Win <= W46;
-else if (count == 47) Win <= W47;
-else if (count == 48) Win <= W48;
-else if (count == 49) Win <= W49;
-else if (count == 50) Win <= W50;
-else if (count == 51) Win <= W51;
-else if (count == 52) Win <= W52;
-else if (count == 53) Win <= W53;
-else if (count == 54) Win <= W54;
-else if (count == 55) Win <= W55;
-else if (count == 56) Win <= W56;
-else if (count == 57) Win <= W57;
-else if (count == 58) Win <= W58;
-else if (count == 59) Win <= W59;
-else if (count == 60) Win <= W60;
-else if (count == 61) Win <= W61;
-else if (count == 62) Win <= W62;
-else if (count == 63) Win <= W63;
+always_comb begin
 
+         case(count)
+    6'b000000: Win = W0;
+    6'b000001: Win = W1;
+    6'b000010: Win = W2;
+    6'b000011: Win = W3;
+    6'b000100: Win = W4;
+    6'b000101: Win = W5;
+    6'b000110: Win = W6;
+    6'b000111: Win = W7;
+    6'b001000: Win = W8;
+    6'b001001: Win = W9;
+    6'b001010: Win = W10;
+    6'b001011: Win = W11;
+    6'b001100: Win = W12;
+    6'b001101: Win = W13;
+    6'b001110: Win = W14;
+    6'b001111: Win = W15;
+    6'b010000: Win = W16;
+    6'b010001: Win = W17;
+    6'b010010: Win = W18;
+    6'b010011: Win = W19;
+    6'b010100: Win = W20;
+    6'b010101: Win = W21;
+    6'b010110: Win = W22;
+    6'b010111: Win = W23;
+    6'b011000: Win = W24;
+    6'b011001: Win = W25;
+    6'b011010: Win = W26;
+    6'b011011: Win = W27;
+    6'b011100: Win = W28;
+    6'b011101: Win = W29;
+    6'b011110: Win = W30;
+    6'b011111: Win = W31;
+    6'b100000: Win = W32;
+    6'b100001: Win = W33;
+    6'b100010: Win = W34;
+    6'b100011: Win = W35;
+    6'b100100: Win = W36;
+    6'b100101: Win = W37;
+    6'b100110: Win = W38;
+    6'b100111: Win = W39;
+    6'b101000: Win = W40;
+    6'b101001: Win = W41;
+    6'b101010: Win = W42;
+    6'b101011: Win = W43;
+    6'b101100: Win = W44;
+    6'b101101: Win = W45;
+    6'b101110: Win = W46;
+    6'b101111: Win = W47;
+    6'b110000: Win = W48;
+    6'b110001: Win = W49;
+    6'b110010: Win = W50;
+    6'b110011: Win = W51;
+    6'b110100: Win = W52;
+    6'b110101: Win = W53;
+    6'b110110: Win = W54;
+    6'b110111: Win = W55;
+    6'b111000: Win = W56;
+    6'b111001: Win = W57;
+    6'b111010: Win = W58;
+    6'b111011: Win = W59;
+    6'b111100: Win = W60;
+    6'b111101: Win = W61;
+    6'b111110: Win = W62;
+    6'b111111: Win = W63;
+      endcase
 	end
 
 
-		always_ff @(posedge clk) begin
-    if (count == 0) Kin <= K[2047:2016];
-    else if (count == 1) Kin <= K[2015:1984];
-    else if (count == 2) Kin <= K[1983:1952];
-    else if (count == 3) Kin <= K[1951:1920];
-    else if (count == 4) Kin <= K[1919:1888];
-    else if (count == 5) Kin <= K[1887:1856];
-    else if (count == 6) Kin <= K[1855:1824];
-    else if (count == 7) Kin <= K[1823:1792];
-    else if (count == 8) Kin <= K[1791:1760];
-    else if (count == 9) Kin <= K[1759:1728];
-    else if (count == 10) Kin <= K[1727:1696];
-    else if (count == 11) Kin <= K[1695:1664];
-    else if (count == 12) Kin <= K[1663:1632];
-    else if (count == 13) Kin <= K[1631:1600];
-    else if (count == 14) Kin <= K[1599:1568];
-    else if (count == 15) Kin <= K[1567:1536];
-    else if (count == 16) Kin <= K[1535:1504];
-    else if (count == 17) Kin <= K[1503:1472];
-    else if (count == 18) Kin <= K[1471:1440];
-    else if (count == 19) Kin <= K[1439:1408];
-    else if (count == 20) Kin <= K[1407:1376];
-    else if (count == 21) Kin <= K[1375:1344];
-    else if (count == 22) Kin <= K[1343:1312];
-    else if (count == 23) Kin <= K[1311:1280];
-    else if (count == 24) Kin <= K[1279:1248];
-    else if (count == 25) Kin <= K[1247:1216];
-    else if (count == 26) Kin <= K[1215:1184];
-    else if (count == 27) Kin <= K[1183:1152];
-    else if (count == 28) Kin <= K[1151:1120];
-    else if (count == 29) Kin <= K[1119:1088];
-    else if (count == 30) Kin <= K[1087:1056];
-    else if (count == 31) Kin <= K[1055:1024];
-    else if (count == 32) Kin <= K[1023:992];
-    else if (count == 33) Kin <= K[991:960];
-    else if (count == 34) Kin <= K[959:928];
-    else if (count == 35) Kin <= K[927:896];
-    else if (count == 36) Kin <= K[895:864];
-    else if (count == 37) Kin <= K[863:832];
-    else if (count == 38) Kin <= K[831:800];
-    else if (count == 39) Kin <= K[799:768];
-    else if (count == 40) Kin <= K[767:736];
-    else if (count == 41) Kin <= K[735:704];
-    else if (count == 42) Kin <= K[703:672];
-    else if (count == 43) Kin <= K[671:640];
-    else if (count == 44) Kin <= K[639:608];
-    else if (count == 45) Kin <= K[607:576];
-    else if (count == 46) Kin <= K[575:544];
-    else if (count == 47) Kin <= K[543:512];
-    else if (count == 48) Kin <= K[511:480];
-    else if (count == 49) Kin <= K[479:448];
-    else if (count == 50) Kin <= K[447:416];
-    else if (count == 51) Kin <= K[415:384];
-    else if (count == 52) Kin <= K[383:352];
-    else if (count == 53) Kin <= K[351:320];
-    else if (count == 54) Kin <= K[319:288];
-    else if (count == 55) Kin <= K[287:256];
-    else if (count == 56) Kin <= K[255:224];
-    else if (count == 57) Kin <= K[223:192];
-    else if (count == 58) Kin <= K[191:160];
-    else if (count == 59) Kin <= K[159:128];
-    else if (count == 60) Kin <= K[127:96];
-    else if (count == 61) Kin <= K[95:64];
-    else if (count == 62) Kin <= K[63:32];
-    else if (count == 63) Kin <= K[31:0];
+		always_comb begin
+
+         case(count)
+    6'b000000: Kin = K[2047:2016];
+    6'b000001: Kin = K[2015:1984];
+    6'b000010: Kin = K[1983:1952];
+    6'b000011: Kin = K[1951:1920];
+    6'b000100: Kin = K[1919:1888];
+    6'b000101: Kin = K[1887:1856];
+    6'b000110: Kin = K[1855:1824];
+    6'b000111: Kin = K[1823:1792];
+    6'b001000: Kin = K[1791:1760];
+    6'b001001: Kin = K[1759:1728];
+    6'b001010: Kin = K[1727:1696];
+    6'b001011: Kin = K[1695:1664];
+    6'b001100: Kin = K[1663:1632];
+    6'b001101: Kin = K[1631:1600];
+    6'b001110: Kin = K[1599:1568];
+    6'b001111: Kin = K[1567:1536];
+    6'b010000: Kin = K[1535:1504];
+    6'b010001: Kin = K[1503:1472];
+    6'b010010: Kin = K[1471:1440];
+    6'b010011: Kin = K[1439:1408];
+    6'b010100: Kin = K[1407:1376];
+    6'b010101: Kin = K[1375:1344];
+    6'b010110: Kin = K[1343:1312];
+    6'b010111: Kin = K[1311:1280];
+    6'b011000: Kin = K[1279:1248];
+    6'b011001: Kin = K[1247:1216];
+    6'b011010: Kin = K[1215:1184];
+    6'b011011: Kin = K[1183:1152];
+    6'b011100: Kin = K[1151:1120];
+    6'b011101: Kin = K[1119:1088];
+    6'b011110: Kin = K[1087:1056];
+    6'b011111: Kin = K[1055:1024];
+    6'b100000: Kin = K[1023:992];
+    6'b100001: Kin = K[991:960];
+    6'b100010: Kin = K[959:928];
+    6'b100011: Kin = K[927:896];
+    6'b100100: Kin = K[895:864];
+    6'b100101: Kin = K[863:832];
+    6'b100110: Kin = K[831:800];
+    6'b100111: Kin = K[799:768];
+    6'b101000: Kin = K[767:736];
+    6'b101001: Kin = K[735:704];
+    6'b101010: Kin = K[703:672];
+    6'b101011: Kin = K[671:640];
+    6'b101100: Kin = K[639:608];
+    6'b101101: Kin = K[607:576];
+    6'b101110: Kin = K[575:544];
+    6'b101111: Kin = K[543:512];
+    6'b110000: Kin = K[511:480];
+    6'b110001: Kin = K[479:448];
+    6'b110010: Kin = K[447:416];
+    6'b110011: Kin = K[415:384];
+    6'b110100: Kin = K[383:352];
+    6'b110101: Kin = K[351:320];
+    6'b110110: Kin = K[319:288];
+    6'b110111: Kin = K[287:256];
+    6'b111000: Kin = K[255:224];
+    6'b111001: Kin = K[223:192];
+    6'b111010: Kin = K[191:160];
+    6'b111011: Kin = K[159:128];
+    6'b111100: Kin = K[127:96];
+    6'b111101: Kin = K[95:64];
+    6'b111110: Kin = K[63:32];
+    6'b111111: Kin = K[31:0];
+
+      
+         endcase
 end
 
    
    
-   assign a = first ? H[255:224] : regA_out;
-   assign b = first ? H[223:192] : regB_out;
-   assign c = first ? H[191:160] : regC_out;
-   assign d = first ? H[159:128] : regD_out;
-   assign e = first ? H[127:96] : regE_out;
-   assign f = first ? H[95:64] : regF_out;
-   assign g = first ? H[63:32] : regG_out;
-   assign h = first ? H[31:0] : regH_out;
+   assign a = (count==0) ? H[255:224] : regA_out;
+   assign b = (count==0) ? H[223:192] : regB_out;
+   assign c = (count==0) ? H[191:160] : regC_out;
+   assign d = (count==0) ? H[159:128] : regD_out;
+   assign e = (count==0) ? H[127:96] : regE_out;
+   assign f = (count==0) ? H[95:64] : regF_out;
+   assign g = (count==0) ? H[63:32] : regG_out;
+   assign h = (count==0) ? H[31:0] : regH_out;
 
  main_comp mc(a, b, c, d, e, f, g, h,
 		   Kin, Win,
@@ -261,13 +268,13 @@ end
 		   e0_out, f0_out, g0_out, h0_out);
 
 
-		         flopenr #(32) regA (clk, reset, en, a0_out, regA_out);
+		        flopenr #(32) regA (clk, reset, en, a0_out, regA_out);
 			     flopenr #(32) regB (clk, reset, en, b0_out, regB_out);
-				 flopenr #(32) regC (clk, reset, en, c0_out, regC_out);
+				  flopenr #(32) regC (clk, reset, en, c0_out, regC_out);
 			     flopenr #(32) regD (clk, reset, en, d0_out, regD_out);
-				 flopenr #(32) regE (clk, reset, en, e0_out, regE_out);
+				  flopenr #(32) regE (clk, reset, en, e0_out, regE_out);
 			     flopenr #(32) regF (clk, reset, en, f0_out, regF_out);
-				 flopenr #(32) regG (clk, reset, en, g0_out, regG_out);
+				  flopenr #(32) regG (clk, reset, en, g0_out, regG_out);
 			     flopenr #(32) regH (clk, reset, en, h0_out, regH_out);
 
 
@@ -320,7 +327,7 @@ always_comb
 				en<=1'b1;
 				init<=1'b1;
 				$display("In state 1");
-				nextstate<=S2;
+				nextstate=S2;
 		end
 
 		S2:begin
@@ -660,9 +667,11 @@ module flopenr #(parameter WIDTH = 32) (
   input  logic [WIDTH-1:0] d, 
   output logic [WIDTH-1:0] q);
 
-  always_ff @(posedge clk)
-    if (reset)   q <= #1 0;
-    else if (en) q <= #1 d;
+       always_ff @(posedge clk)
+       if (reset)   q <= #1 0;
+       else if (en) q <= #1 d;
+
+       
 endmodule
 
 `timescale 1ns / 1ps
@@ -688,7 +697,7 @@ module counter64 (
     logic count_enable;
 	
     // Always block to handle reset and counting
-    always_ff @(posedge clk or posedge rst) begin
+    always_ff @(negedge clk or posedge rst) begin
         if (rst) begin
 			done<=0;
             count <= 6'b000000;             // Reset counter to 0
