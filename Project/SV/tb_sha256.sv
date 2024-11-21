@@ -52,11 +52,11 @@ module stimulus;
  initial
  begin
   #0 reset = 1'b1;
-  #21 reset = 1'b0;
-  #0 start = 1'b1;
-  #800 start = 1'b0;
+  #11 reset = 1'b0;
+  #1 start = 1'b1;
+  #11 start = 1'b0;
  
-  $fdisplay(desc3, "%h %h || %h || %b", message, hashed, result, (result == hashed));
+  #800 $fdisplay(desc3, "%h %h || %h || %b", message, hashed, result, (result == hashed));
  end
 
    
