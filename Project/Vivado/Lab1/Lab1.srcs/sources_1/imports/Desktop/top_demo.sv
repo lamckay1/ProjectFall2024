@@ -47,10 +47,10 @@ module top_demo
   // Place SHA instantiation here
   logic [255:0] hashed;
   logic [MSG_SIZE-1:0] message;
-  localparam MSG_SIZE = 24;
+  localparam MSG_SIZE = 96;
   localparam PADDED_SIZE = 512;
   logic [255:0] result;
-  logic [63:0] s;
+  logic [15:0] s;
   
   top#( MSG_SIZE, PADDED_SIZE)(.message(96'h47756e647920526f636b7321),
   .clk(sysclk_125mhz), .reset(btn[3]), .start(btn[0]),
